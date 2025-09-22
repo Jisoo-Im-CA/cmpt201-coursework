@@ -22,15 +22,24 @@ int main(int argc, char *argv[]) {
         perror("Fail to enter");
       }
       break;
-    } else if (len > 0) {
+    }
+    if (len > 0) {
       line[len - 1] = '\0';
     }
 
     printf("Executing:\"%s\"\n", line);
 
     pid_t pid = fork();
+    if (pid == -1) {
+      perror("fork");
+      exit(EXIT_FAILURE);
+    }
 
-    if (pid) {
+    if (pid == 0) {
+      execl(line, line, (char *)NULL);
+      perror("execel");
+      exit(EXIT_FAILURE);
+    } else {
       int status = 0;
       if (waitpid(pid, &status, 0) == -1) {
         perror("waitpid");
